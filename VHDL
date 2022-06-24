@@ -1,0 +1,89 @@
+library IEEE;   
+use IEEE.STD_LOGIC_1164.ALL;  
+
+entity TicTac is   
+    Port (button : in  std_logic_vector(16 downto 1); --16 bit input 
+          reset : in  std_logic;  
+          p_to_play : out std_logic;   
+          p1_win : out  std_logic := '0';   
+          p2_win : out  std_logic := '0';   
+          ou1 : out std_logic_vector(16 downto 1); --16 bit output   
+          ou2 : out std_logic_vector(16 downto 1)); --16 bit output     
+end TicTac;   
+    signal o1 : std_logic_vector(16 downto 1) := (others => '0');    
+    signal o2 : std_logic_vector(16 downto 1) := (others => '0'); 
+    signal o  : std_logic_vector(16 downto 1) := (others => '0');
+    signal p  : std_logic;
+    signal win  : std_logic;
+    signal win1 : std_logic;
+    signal win2 : std_logic; 
+
+begin   
+    ou1 <= o1;---ou1 is assigned o1
+    ou2 <= o2;---ou2 is assigned o2
+    p_to_play <= p;---p_to_play is assigned p
+    p1_win <= win1;
+    p2_win <= win2;
+    win <= win1 or win2; ----OR operation b/w win1 and win2
+
+    gen_spots : for i in 1 to 16 generate --3 flip flops share a clock (button) for every space on the board
+        process(button(i), reset)
+        begin
+            if(reset = '1') then
+                o(i)  <= '0';
+                o1(i) <= '0';
+                o2(i) <= '0';
+            elsif(button(i)'event and button(i)='1' and o(i)='0' and win='0') then
+                o(i) <= '1';
+                if (p = '0') then
+                    o1(i) <= '1';
+                else
+                    o2(i) <= '1';
+                end if;
+            end if;
+        end process;
+    end generate gen_spots;
+
+    process(o) --determines current player by xoring the o values together.
+        variable ot : std_logic;
+    begin
+        ot := '0';
+        for i in 1 to 16 loop
+            ot := ot xor o(i);
+        end loop;
+        p <= ot;
+    end process;
+  
+    process(o1) --checks if player 1 wins
+    begin
+        win1 <= '0'; --only happens if none of the win1 <= '1' statements occur
+        for i in 0 to 3 loop
+            if (o1(1+i*4)='1' and o1(2+i*4)='1' and o1(3+i*4)='1' and o1(4+i*4)='1') then --rows
+                win1 <= '1';
+            end if;
+            if (o1(1+i)='1' and o1(5+i)='1' and o1(9+i)='1' and o1(13+i)='1') then --columns
+                win1 <= '1';
+            end if;
+        end loop;
+        if (o1(1)='1' and o1(6)='1' and o1(11)='1' and o1(16)='1') or (o1(4)='1' and o1(7)='1' and o1(10)='1' and o1(13)='1') then --diagonals
+            win1 <= '1';
+        end if;
+    end process;
+
+    process(o2) --checks if player 2 wins
+    begin
+        win2 <= '0'; --only happens if none of the win2 <= '1' statements occur
+        for i in 0 to 3 loop
+            if (o2(1+i*4)='1' and o2(2+i*4)='1' and o2(3+i*4)='1' and o2(4+i*4)='1') then --rows
+                win2 <= '1';
+            end if;
+            if (o2(1+i)='1' and o2(5+i)='1' and o2(9+i)='1' and o2(13+i)='1') then --columns
+                win2 <= '1';
+            end if;
+        end loop;
+        if (o2(1)='1' and o2(6)='1' and o2(11)='1' and o2(16)='1') or (o2(4)='1' and o2(7)='1' and o2(10)='1' and o2(13)='1') then --diagonals
+            win2 <= '1';
+        end if;
+    end process;
+
+end Behavioral;
