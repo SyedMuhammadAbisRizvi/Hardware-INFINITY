@@ -1,0 +1,89 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+ USE ieee.numeric_std.ALL;
+ END test_bench;     
+ 
+    COMPONENT TicTac
+    PORT(
+         button : IN  std_logic_vector(16 downto 1);
+         reset : IN  std_logic;
+         p_to_play : OUT  std_logic;
+         p1_win : OUT  std_logic;
+         p2_win : OUT  std_logic;
+         ou1 : OUT  std_logic_vector(16 downto 1);
+         ou2 : OUT  std_logic_vector(16 downto 1)
+        );
+    END COMPONENT;
+    
+
+   --Inputs
+   signal button : std_logic_vector(16 downto 1) := (others => '0');
+   signal reset : std_logic := '0';
+
+ 	--Outputs
+   signal p_to_play : std_logic;
+   signal p1_win : std_logic;
+   signal p2_win : std_logic;
+   signal ou1 : std_logic_vector(16 downto 1);
+   signal ou2 : std_logic_vector(16 downto 1);
+   
+ 
+   constant <clock>_period : time := 10 ns;
+ 
+BEGIN
+ 
+	
+   uut: TicTac PORT MAP (
+          button => button,----button is linked with button
+          reset => reset,---reset is linked with reset
+          p_to_play => p_to_play,----p_to_play is linked with p_to_play
+          p1_win => p1_win,---------p1_win is linked with p1_win
+          p2_win => p2_win,---p2_win is linked with p2 win
+          ou1 => ou1, ---ou1 is linked with ou1
+          ou2 => ou2---ou2 is linked with ou2
+        );
+
+ 
+ 
+   stim_proc: process
+   begin		
+     button<=x"0000";
+	  wait for 10 ns;
+	  
+	   button<=x"1301";
+	  wait for 10 ns;
+	  
+	  button<=x"10f2";
+	  wait for 10 ns;
+	  
+	   button<=x"fB0f";
+	  wait for 10 ns;
+	  
+	  button<=x"a0ff";
+	  wait for 10 ns;
+	  
+	   button<=x"ff01";
+	  wait for 10 ns;
+	  
+	  button<=x"fff2";
+	  wait for 10 ns;
+	  
+	   button<=x"1A0f";
+	  wait for 10 ns;
+	  
+	   button<=x"fB0f";
+	  wait for 10 ns;
+	  
+	  button<=x"a1ff";
+	  wait for 10 ns;
+	  
+	   button<=x"ff01";
+	  wait for 10 ns;
+	  
+	  button<=x"f0f2";
+	  wait for 10 ns;
+	  
+	   button<=x"0A1f";
+	  wait for 10 ns;
+   end process; 
+ END;
